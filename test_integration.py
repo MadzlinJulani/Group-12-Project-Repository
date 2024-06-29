@@ -1,24 +1,40 @@
-import pytest
-import pygame
-from main import run
-import os
 
-def test_simulation_run():
-    # Initialize Pygame
-    pygame.init()
+import unittest
+import os
+import neat
+from main import Car, eval_genomes
+
+class TestIntegration(unittest.TestCase):
     
-    # Create a temporary configuration file path
-    config_path = os.path.join(os.path.dirname(__file__), 'config.txt')
-    
-    # Run the simulation 
-    run(config_path)
-    
-    # Check if the population object is created and not None
-    assert pop is not None
-    assert pop.best_genome is not None
-    
-    # Quit Pygame
-    pygame.quit()
+    @classmethod
+    def setUpClass(cls):
+        # Get the path to config.txt in the parent directory
+        config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.txt')
+        cls.config = neat.config.Config(
+            neat.DefaultGenome,
+            neat.DefaultReproduction,
+            neat.DefaultSpeciesSet,
+            neat.DefaultStagnation,
+            config_path
+        )
+
+    def test_neat_initialization(self):
+        pop = neat.Population(self.config)
+        self.assertIsInstance(pop, neat.Population)
+        
+    def test_car_initialization(self):
+        car = Car()
+        self.assertIsInstance(car, Car)
+        self.assertTrue(car.alive)
+        self.assertEqual(car.angle, 0)
+        self.assertEqual(len(car.radars), 0)
+        
+    def test_eval_genomes(self):
+        # Create a fake genome for testing
+        genomes = [(1, neat.DefaultGenome(1))]
+        eval_genomes(genomes, self.config)
+        # Check if the genome fitness has been set
+        self.assertGreaterEqual(genomes[0][1].fitness, 0)
 
 if __name__ == '__main__':
-    pytest.main()
+    unittest.main()
