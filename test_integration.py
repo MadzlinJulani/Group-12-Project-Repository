@@ -10,7 +10,7 @@ def test_simulation_run():
     # Create a temporary configuration file path
     config_path = os.path.join(os.path.dirname(__file__), 'config.txt')
     
-    # Run the simulation (this is a simplified example; in practice, you may want to run for fewer generations)
+    # Run the simulation 
     run(config_path)
     
     # Check if the population object is created and not None
